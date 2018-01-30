@@ -1,0 +1,8 @@
+[package]
+name = "library_of_murmas"
+version = "0.1.0"
+authors = ["Atom <ismenius@gmail.com>"]
+
+[dependencies]
+nickel = "*"
+
