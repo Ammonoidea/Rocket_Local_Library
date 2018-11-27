@@ -4,5 +4,6 @@ version = "0.1.0"
 authors = ["Atom <ismenius@gmail.com>"]
 
 [dependencies]
-nickel = "*"
-
+rocket = "0.4.0-rc.1"
+chrono = "0.4"
+mongodb = "0.3.11"
