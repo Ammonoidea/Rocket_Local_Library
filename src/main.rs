@@ -1,23 +1,29 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 #[macro_use] extern crate rocket;
-#[macro_use] extern crate chrono;
-#[macro_use(bson, doc)] extern crate mongodb;
+extern crate rocket_contrib;
 
-use mongodb::{Bson, doc};
-use mongodb::{Client, ThreadedClient};
-use mongodb::db::ThreadedDatabase;
-
+mod controllers;
 mod models;
 
+use mongodb::bson::{doc, Bson, Document};
+use mongodb::sync::{Client};
+
+use controllers::author_controller;
+
+use rocket_contrib::serve::StaticFiles;
+use rocket_contrib::templates::Template;
+use std::collections::HashMap;
+
 #[get("/")]
-fn index() -> &'static str {
-	"Hello, Christina!"
+fn index() -> Template {
+	let context = HashMap::<String, String>::new();
+	Template::render("index", context)
 }
 
 fn main() {
-	let client = Client::connect("localhost", 3306)
-		.expect("Failed to initialize standalone client.");
-	let coll = client.db("library").collection("books");
+	let client = Client::with_uri_str("mongodb://localhost:27017").unwrap();
+	let db = client.database("library");
+	let coll = db.collection::<Document>("books");
 	let mut cursor = coll.find(Some(doc!()), None)
 		.ok().expect("Failed to execute find.");
 
@@ -32,6 +38,9 @@ fn main() {
 		Some(Err(_)) => panic!("Failed to get next from server!"),
 		None => panic!("Server returned no results!"),
 	}
-	rocket::ignite().mount("/", routes![index]).launch();
+	rocket::ignite().mount("/", routes![index])
+		.mount("/authors", routes![author_controller::author_list])
+        .mount("/", StaticFiles::from("static"))
+		.attach(Template::fairing()).launch();
 
 }

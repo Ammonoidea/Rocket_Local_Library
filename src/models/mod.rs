@@ -1,2 +1,5 @@
-pub use self::author::Author;
-mod author;
+pub mod author;
+pub mod book;
+pub mod book_instance;
+pub mod genre;
+pub mod documentable;
