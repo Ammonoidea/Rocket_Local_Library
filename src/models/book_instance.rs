@@ -34,4 +34,12 @@ impl Persistable for BookInstance {
             "dueBack": self.due_back.to_string()
         }
     }
+
+    fn from_document(document: &Document) -> Self {
+        unimplemented!();
+    }
+
+    fn coll_name() -> String {
+        unimplemented!();
+    }
 }

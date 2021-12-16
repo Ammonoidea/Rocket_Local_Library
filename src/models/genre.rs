@@ -12,4 +12,12 @@ impl Persistable for Genre {
             "name": self.name.clone()
         }
     }
+
+    fn from_document(document: &Document) -> Self {
+        unimplemented!();
+    }
+
+    fn coll_name() -> String {
+        unimplemented!();
+    }
 }

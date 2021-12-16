@@ -1,5 +1,5 @@
 use rocket_contrib::templates::Template;
-use models::author::Author;
+use crate::models::author::Author;
 use std::collections::HashMap;
 
 #[get("/")]

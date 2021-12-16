@@ -21,4 +21,12 @@ impl Persistable for Book {
             "genreIds": self.genre_ids.join(",")
         }
     }
+
+    fn from_document(document: &Document) -> Self {
+        unimplemented!();
+    }
+
+    fn coll_name() -> String {
+        unimplemented!();
+    }
 }
