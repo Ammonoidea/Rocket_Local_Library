@@ -12,13 +12,16 @@ use controllers::author_controller;
 use rocket_dyn_templates::Template;
 use std::collections::HashMap;
 
+use rocket::fs::{FileServer, relative};
+
 #[get("/")]
 fn index() -> Template {
 	let context = HashMap::<String, String>::new();
 	Template::render("index", context)
 }
 
-fn main() {
+#[launch]
+fn rocket() -> _ {
 	let client = Client::with_uri_str("mongodb://localhost:27017").unwrap();
 	let db = client.database("library");
 	let coll = db.collection::<Document>("books");
@@ -39,7 +42,7 @@ fn main() {
 	rocket::build()
 		.mount("/", routes![index])
 		.mount("/authors", routes![author_controller::author_list])
-        .mount("/", StaticFiles::from("static"))
-		.attach(Template::fairing()).launch();
+        .mount("/", FileServer::from(relative!("static")))
+		.attach(Template::fairing())
 
 }
