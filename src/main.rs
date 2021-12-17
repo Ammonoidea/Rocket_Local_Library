@@ -1,6 +1,5 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 #[macro_use] extern crate rocket;
-extern crate rocket_contrib;
 
 mod controllers;
 mod models;
@@ -10,8 +9,7 @@ use mongodb::sync::{Client};
 
 use controllers::author_controller;
 
-use rocket_contrib::serve::StaticFiles;
-use rocket_contrib::templates::Template;
+use rocket_dyn_templates::Template;
 use std::collections::HashMap;
 
 #[get("/")]
@@ -38,7 +36,8 @@ fn main() {
 		Some(Err(_)) => panic!("Failed to get next from server!"),
 		None => panic!("Server returned no results!"),
 	}
-	rocket::ignite().mount("/", routes![index])
+	rocket::build()
+		.mount("/", routes![index])
 		.mount("/authors", routes![author_controller::author_list])
         .mount("/", StaticFiles::from("static"))
 		.attach(Template::fairing()).launch();

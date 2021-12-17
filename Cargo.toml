@@ -5,13 +5,12 @@ authors = ["Atom <ismenius@gmail.com>"]
 
 edition="2021"
 [dependencies]
-rocket = "0.4.0-rc.2"
+rocket = "0.5.0-rc.1"
 chrono = "0.4"
 
-[dependencies.rocket_contrib]
-version = "0.4.0-rc.2"
-default-features = false
-features = ["tera_templates", "serve"]
+[dependencies.rocket_dyn_templates]
+version = "0.1.0-rc.1"
+features = ["tera"]
 
 [dependencies.mongodb]
 version = "2.1.0"
