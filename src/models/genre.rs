@@ -3,7 +3,7 @@ use mongodb::bson::{doc, Document};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Genre {
-    pub name: String
+    pub name: String,
 }
 
 impl Persistable for Genre {

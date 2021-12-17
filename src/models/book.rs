@@ -8,12 +8,12 @@ pub struct Book {
     pub author_id: String,
     pub summary: String,
     pub isbn: String,
-    pub genre_ids: Vec<String>
+    pub genre_ids: Vec<String>,
 }
 
 impl Persistable for Book {
     fn to_document(&self) -> Document {
-        doc!{
+        doc! {
             "title": self.title.clone(),
             "authorId": self.author_id.clone(),
             "summary": self.summary.clone(),

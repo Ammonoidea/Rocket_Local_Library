@@ -1,5 +1,5 @@
-use rocket_dyn_templates::Template;
 use crate::models::author::Author;
+use rocket_dyn_templates::Template;
 use std::collections::HashMap;
 
 #[get("/")]
@@ -14,6 +14,6 @@ pub fn author_detail() -> Template {
 }
 
 pub fn author_create_post() -> Template {
-    let context = HashMap::<String, String>::new();                            
+    let context = HashMap::<String, String>::new();
     Template::render("index", context)
 }
