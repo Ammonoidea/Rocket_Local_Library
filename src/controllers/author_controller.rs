@@ -1,4 +1,3 @@
-use crate::models::author::Author;
 use rocket_dyn_templates::Template;
 use std::collections::HashMap;
 

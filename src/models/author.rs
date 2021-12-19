@@ -42,11 +42,11 @@ impl Persistable for Author {
     fn from_document(document: &Document) -> Self {
         Author {
             first_name: match document.get("firstName") {
-                Some(&Bson::String(ref firstName)) => firstName.clone(),
+                Some(&Bson::String(ref first_name)) => first_name.clone(),
                 _ => panic!("Expected first name to be a string"),
             },
             family_name: match document.get("lastName") {
-                Some(&Bson::String(ref lastName)) => Some(lastName.clone()),
+                Some(&Bson::String(ref last_name)) => Some(last_name.clone()),
                 None => None,
                 _ => panic!("Expected last name to be a string or None"),
             },

@@ -1,4 +1,4 @@
-use mongodb::bson::{doc, Bson, Document};
+use mongodb::bson::Document;
 use mongodb::error::Result;
 use mongodb::sync::{Collection, Database};
 
@@ -11,7 +11,7 @@ impl BookCollection {
         self.book_coll.estimated_document_count(None)
     }
 
-    pub fn build_book_collection(db: Database) -> BookCollection {
+    pub fn build(db: &Database) -> BookCollection {
         BookCollection {
             book_coll: db.collection::<Document>("books"),
         }
