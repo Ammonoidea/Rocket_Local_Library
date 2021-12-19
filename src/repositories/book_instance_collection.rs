@@ -35,7 +35,6 @@ impl BookInstanceCollection {
             )
             .unwrap();
 
-
         //TODO AKIRA: handle this in a better way
         match results.next() {
             Some(d) => bson::from_document::<CountDoc>(d.unwrap()).unwrap().count,
