@@ -1,7 +1,8 @@
 use mongodb::bson::{self, doc, Document};
 use mongodb::error::Result;
-use mongodb::sync::{Collection, Cursor, Database};
+use mongodb::{Collection, Cursor, Database};
 use serde::Deserialize;
+use futures::stream::TryStreamExt;
 
 pub struct BookInstanceCollection {
     book_instance_coll: Collection<Document>,
@@ -13,11 +14,11 @@ struct CountDoc {
 }
 
 impl BookInstanceCollection {
-    pub fn count_book_instances(&self) -> Result<u64> {
-        self.book_instance_coll.estimated_document_count(None)
+    pub async fn count_book_instances(&self) -> Result<u64> {
+        self.book_instance_coll.estimated_document_count(None).await
     }
 
-    pub fn count_books_by_status(&self, status: &str) -> u64 {
+    pub async fn count_books_by_status(&self, status: &str) -> u64 {
         let mut results: Cursor<Document> = self
             .book_instance_coll
             .aggregate(
@@ -33,11 +34,11 @@ impl BookInstanceCollection {
                 ],
                 None,
             )
-            .unwrap();
+            .await.unwrap();
 
         //TODO AKIRA: handle this in a better way
-        match results.next() {
-            Some(d) => bson::from_document::<CountDoc>(d.unwrap()).unwrap().count,
+        match results.try_next().await.unwrap() {
+            Some(d) => bson::from_document::<CountDoc>(d).unwrap().count,
             None => panic!("No book instance collections could be counted by status {}. Suggested error: the collection string is wrong", status),
         }
     }
