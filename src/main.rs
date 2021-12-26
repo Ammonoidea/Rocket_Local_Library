@@ -16,6 +16,7 @@ use controllers::index_controller;
 use repositories::author_collection::AuthorCollection;
 use repositories::book_collection::BookCollection;
 use repositories::book_instance_collection::BookInstanceCollection;
+use repositories::genre_collection::GenreCollection;
 
 use rocket_dyn_templates::Template;
 
@@ -23,12 +24,15 @@ use rocket::fs::{relative, FileServer};
 
 #[launch]
 async fn rocket() -> _ {
-    let client = Client::with_uri_str("mongodb://localhost:27017").await.unwrap();
+    let client = Client::with_uri_str("mongodb://localhost:27017")
+        .await
+        .unwrap();
     let db = client.database("library");
     rocket::build()
         .manage(BookCollection::build(&db))
         .manage(BookInstanceCollection::build(&db))
         .manage(AuthorCollection::build(&db))
+        .manage(GenreCollection::build(&db))
         .mount("/", routes![index_controller::index])
         .mount(
             "/catalog/author",

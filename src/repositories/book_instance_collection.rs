@@ -1,8 +1,8 @@
+use futures::stream::TryStreamExt;
 use mongodb::bson::{self, doc, Document};
 use mongodb::error::Result;
 use mongodb::{Collection, Cursor, Database};
 use serde::Deserialize;
-use futures::stream::TryStreamExt;
 
 pub struct BookInstanceCollection {
     book_instance_coll: Collection<Document>,
@@ -34,7 +34,8 @@ impl BookInstanceCollection {
                 ],
                 None,
             )
-            .await.unwrap();
+            .await
+            .unwrap();
 
         //TODO AKIRA: handle this in a better way
         match results.try_next().await.unwrap() {
