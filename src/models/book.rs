@@ -1,8 +1,10 @@
 use mongodb::bson::{doc, Document};
 
+use serde::{Deserialize, Serialize};
+
 use crate::models::documentable::Persistable;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Book {
     pub title: String,
     pub author_id: String,

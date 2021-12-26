@@ -1,3 +1,7 @@
+use rocket::State;
+use rocket_dyn_templates::Template;
+use crate::BookCollection;
+
 #[get("/create")]
 pub fn book_create_get() -> &'static str {
     "NOT IMPLEMENTED: Book create get"
@@ -41,8 +45,8 @@ pub fn book_update_post(id: &str) -> String {
 }
 
 #[get("/")]
-pub fn book_list() -> &'static str {
-    "NOT IMPLEMENTED: Book list"
+pub fn book_list(book_coll: &State<BookCollection>) -> Template {
+    Template::render()
 }
 
 #[get("/<id>")]

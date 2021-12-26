@@ -1,15 +1,13 @@
-// use chrono::prelude::*;
-// use chrono::Duration;
-
 use mongodb::bson::{doc, Bson, Document};
+use serde::Deserialize;
 
 use crate::models::documentable::Persistable;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Deserialize, PartialEq, Eq)]
 pub struct Author {
     pub first_name: String,
     pub family_name: Option<String>,
-    // pub date_of_birth: Option<NaiveDate>,
+    pub date_of_birth: Option<String>,
     // pub date_of_death: Option<NaiveDate>
 }
 
@@ -40,18 +38,19 @@ impl Persistable for Author {
     }
 
     fn from_document(document: &Document) -> Self {
-        Author {
-            first_name: match document.get("firstName") {
-                Some(&Bson::String(ref first_name)) => first_name.clone(),
-                _ => panic!("Expected first name to be a string"),
-            },
-            family_name: match document.get("lastName") {
-                Some(&Bson::String(ref last_name)) => Some(last_name.clone()),
-                None => None,
-                _ => panic!("Expected last name to be a string or None"),
-            },
-            // date_of_birth
-        }
+        unimplemented!()
+        // Author {
+        //     first_name: match document.get("firstName") {
+        //         Some(&Bson::String(ref first_name)) => first_name.clone(),
+        //         _ => panic!("Expected first name to be a string"),
+        //     },
+        //     family_name: match document.get("lastName") {
+        //         Some(&Bson::String(ref last_name)) => Some(last_name.clone()),
+        //         None => None,
+        //         _ => panic!("Expected last name to be a string or None"),
+        //     },
+        //     date_of_birth: 
+        // }
     }
 
     fn coll_name() -> String {
