@@ -1,27 +1,13 @@
-use mongodb::bson::{doc, Document, from_document};
+use mongodb::bson::{doc, Document};
 use mongodb::bson;
 use mongodb::error::Result;
-use mongodb::Cursor;
 use mongodb::{Collection, Database};
 use futures::TryStreamExt;
-use futures::stream::TryCollect;
 
-use serde::Deserialize;
-
-use crate::models::author::Author;
+use crate::models::expanded_book::ExpandedBook;
 
 pub struct BookCollection {
     book_coll: Collection<Document>,
-}
-
-#[derive(Deserialize)]
-struct ExpandedBook {
-    pub title: String,
-    pub author: String,
-    pub summary: String,
-    pub isbn: String,
-    pub genre: Vec<String>,
-    pub author_obj: Author,
 }
 
 
@@ -52,9 +38,12 @@ impl BookCollection {
             Err(_) => return vec![],
         };
 
-        let mut documents: Vec<Document> = cursor.try_collect().await.unwrap_or_else(|_| vec![]);
-        documents.iter().map(|d: &Document| bson::from_document::<ExpandedBook>(*d).unwrap())
-        .collect::<Vec<_>>()
+        let documents: Vec<Document> = cursor.try_collect().await.unwrap_or_else(|_| vec![]);
+        let mut books: Vec<ExpandedBook> = Vec::new();
+        for d in documents {
+            books.push(bson::from_document::<ExpandedBook>(d).unwrap());
+        }
+        books
     }
 
     pub fn build(db: &Database) -> BookCollection {

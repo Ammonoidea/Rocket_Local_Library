@@ -1,6 +1,17 @@
+use futures::executor::block_on;
+
 use rocket::State;
 use rocket_dyn_templates::Template;
-use crate::BookCollection;
+use rocket::serde::Serialize;
+
+use crate::repositories::book_collection::BookCollection;
+use crate::models::decorated_book::DecoratedBook;
+
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+struct BookTemplateContext<'r> {
+    book_list: &'r Vec<DecoratedBook>,
+}
 
 #[get("/create")]
 pub fn book_create_get() -> &'static str {
@@ -46,7 +57,15 @@ pub fn book_update_post(id: &str) -> String {
 
 #[get("/")]
 pub fn book_list(book_coll: &State<BookCollection>) -> Template {
-    Template::render()
+    let expanded_book_list = block_on(book_coll.list_books());
+    let mut decorated_books: Vec<DecoratedBook> = Vec::new();
+    for expanded_book in expanded_book_list {
+        let decorated_book = DecoratedBook::from_expanded_book(expanded_book);
+        decorated_books.push(decorated_book);
+    }
+    Template::render("book_list", &BookTemplateContext {
+        book_list: &decorated_books,
+    })
 }
 
 #[get("/<id>")]
