@@ -1,10 +1,11 @@
 use serde::{Deserialize, Serialize};
+use bson::oid::ObjectId;
 
-#[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Book {
     pub title: String,
-    pub author_id: String,
+    pub author: ObjectId,
     pub summary: String,
     pub isbn: String,
-    pub genre_ids: Vec<String>,
+    pub genre: Vec<ObjectId>,
 }

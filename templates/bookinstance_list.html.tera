@@ -1,0 +1,24 @@
+{% extends "base_generic" %}
+
+<!-- TODO AKIRA: add a function here for displaying dates in the local time zone ugh -->
+{% block content %}
+<h1>Book Instance List</h1>
+
+<ul>
+{% for val in bookinstance_list %}
+    <li><a href="{{ val.url }}">{{ val.book_obj.title }} : {{ val.imprint }}</a> - 
+        {% if val.status == 'Available'%}
+            <span class="text-success">{{ val.status }}</span>
+        {% elif val.status == 'Maintenance' %}
+            <span class="text-danger">{{ val.status }}</span>
+        {% else %}
+            <span class="text-warning">{{ val.status }}</span>
+        {% endif %}
+        {% if val.status != 'Available' %}
+            <span> Due: {{ val.due_back }}</span>
+        {% endif %}
+{% else %}
+    <li>There are no book copies in this library</li>
+{% endfor %}    
+</ul>
+{% endblock %}

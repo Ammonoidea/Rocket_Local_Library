@@ -1,14 +1,14 @@
 use mongodb::bson::Document;
 use mongodb::error::Result;
-use mongodb::{Collection, Database};
+use mongodb::sync::{Collection, Database};
 
 pub struct GenreCollection {
     genre_coll: Collection<Document>,
 }
 
 impl GenreCollection {
-    pub async fn count_genres(&self) -> Result<u64> {
-        self.genre_coll.estimated_document_count(None).await
+    pub fn count_genres(&self) -> Result<u64> {
+        self.genre_coll.estimated_document_count(None)
     }
 
     pub fn build(db: &Database) -> GenreCollection {

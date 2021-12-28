@@ -2,12 +2,18 @@ use crate::AuthorCollection;
 use crate::BookCollection;
 use crate::BookInstanceCollection;
 use crate::GenreCollection;
-use rocket::State;
+use rocket::{State, uri};
+use rocket::response::Redirect;
 use rocket_dyn_templates::Template;
 use std::collections::HashMap;
 
 #[get("/")]
-pub async fn index(
+pub fn bare_root() -> Redirect {
+    Redirect::to(uri!("/catalog/"))
+}
+
+#[get("/catalog")]
+pub fn index(
     book_coll: &State<BookCollection>,
     book_instance_coll: &State<BookInstanceCollection>,
     author_coll: &State<AuthorCollection>,
@@ -15,18 +21,12 @@ pub async fn index(
 ) -> Template {
     // the type for estimated_document_count is Into<Option<...>> and I don't understand what
     // the Into is doing here
-    let f_num_books = book_coll.count_books();
-    let f_available_books = book_instance_coll.count_books_by_status(&"Available");
-    let f_num_book_instances = book_instance_coll.count_book_instances();
-    let f_num_authors = author_coll.count_authors();
-    let f_num_genres = genre_coll.count_genres();
-    let (num_books, available_books, num_book_instances, num_authors, num_genres) = futures::join!(
-        f_num_books,
-        f_available_books,
-        f_num_book_instances,
-        f_num_authors,
-        f_num_genres
-    );
+    let num_books = book_coll.count_books();
+    let available_books = book_instance_coll.count_books_by_status(&"Available");
+    let num_book_instances = book_instance_coll.count_book_instances();
+    let num_authors = author_coll.count_authors();
+    let num_genres = genre_coll.count_genres();
+
 
     let mut context = HashMap::<String, String>::new();
     context.insert("num_books".to_string(), num_books.unwrap().to_string());

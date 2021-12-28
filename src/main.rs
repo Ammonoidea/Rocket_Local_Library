@@ -6,7 +6,7 @@ mod controllers;
 mod models;
 mod repositories;
 
-use mongodb::Client;
+use mongodb::sync::Client;
 
 use controllers::author_controller;
 use controllers::book_controller;
@@ -24,16 +24,14 @@ use rocket::fs::{relative, FileServer};
 
 #[launch]
 async fn rocket() -> _ {
-    let client = Client::with_uri_str("mongodb://localhost:27017")
-        .await
-        .unwrap();
+    let client = Client::with_uri_str("mongodb://localhost:27017").unwrap();
     let db = client.database("library");
     rocket::build()
         .manage(BookCollection::build(&db))
         .manage(BookInstanceCollection::build(&db))
         .manage(AuthorCollection::build(&db))
         .manage(GenreCollection::build(&db))
-        .mount("/", routes![index_controller::index])
+        .mount("/", routes![index_controller::index, index_controller::bare_root])
         .mount(
             "/catalog/author",
             routes![

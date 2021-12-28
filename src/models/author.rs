@@ -1,20 +1,27 @@
+use bson::oid::ObjectId;
+use bson::DateTime;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize, PartialEq, Eq)]
 pub struct Author {
-    pub id: String,
+    pub _id: ObjectId,
     pub first_name: String,
     pub family_name: Option<String>,
-    pub date_of_birth: Option<String>,
+    pub date_of_birth: Option<DateTime>,
     // pub date_of_death: Option<NaiveDate>
 }
 
 impl Author {
     pub fn name(&self) -> String {
-        let mut full_name = self.first_name.clone();
-        full_name.push_str(" ");
-        full_name.push_str(&(self.family_name.clone().unwrap_or_else(|| String::from(""))));
-        full_name
+        match &self.family_name {
+            Some(family) => {
+                let mut full_name = family.clone();
+                full_name.push_str(", ");
+                full_name.push_str(&self.first_name);
+                full_name
+            }
+            None => self.first_name.clone(),
+        }
     }
 
     // pub fn life_span(&self) -> Option<Duration>{

@@ -8,11 +8,13 @@ edition="2021"
 rocket = "0.5.0-rc.1"
 chrono = "0.4"
 serde = { version = "1.0", features = ["derive"] }
-futures = "0.3"
-tokio = "1.15.0"
+bson = "2.1.0"
 
 [dependencies.rocket_dyn_templates]
+version = "0.1.0-rc.1"
 features = ["tera"]
 
 [dependencies.mongodb]
 version = "2.1.0"
+default-features = false
+features = ["sync", ]

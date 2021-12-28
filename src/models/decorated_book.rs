@@ -17,14 +17,19 @@ pub struct DecoratedBook {
 
 impl DecoratedBook {
     pub fn from_expanded_book(expanded_book: ExpandedBook) -> DecoratedBook {
-        let mut url: String = "catalog/book".to_string();
-        url.push_str(&expanded_book.id);
+        let mut url: String = "catalog/book/".to_string();
+        url.push_str(&expanded_book._id.to_string());
+
+        let mut genres: Vec<String> = Vec::new();
+        for object_id in expanded_book.genre {
+            genres.push(object_id.to_hex());
+        }
         DecoratedBook {
             title: expanded_book.title,
-            author: DecoratedAuthor::from_author(expanded_book.author_obj),
+            author: DecoratedAuthor::from_author(&expanded_book.author_obj[0]),
             summary: expanded_book.summary,
             isbn: expanded_book.isbn,
-            genre: expanded_book.genre,
+            genre: genres,
             url: url,
         }
     }

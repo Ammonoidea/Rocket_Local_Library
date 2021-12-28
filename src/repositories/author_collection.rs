@@ -1,14 +1,14 @@
 use mongodb::bson::Document;
 use mongodb::error::Result;
-use mongodb::{Collection, Database};
+use mongodb::sync::{Collection, Database};
 
 pub struct AuthorCollection {
     author_coll: Collection<Document>,
 }
 
 impl AuthorCollection {
-    pub async fn count_authors(&self) -> Result<u64> {
-        self.author_coll.estimated_document_count(None).await
+    pub fn count_authors(&self) -> Result<u64> {
+        self.author_coll.estimated_document_count(None)
     }
 
     pub fn build(db: &Database) -> AuthorCollection {

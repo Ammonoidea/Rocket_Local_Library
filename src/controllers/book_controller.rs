@@ -1,12 +1,6 @@
-use futures::executor::block_on;
-use futures::Future;
-
 use rocket::serde::Serialize;
 use rocket::State;
 use rocket_dyn_templates::Template;
-
-use std::time::Duration;
-use tokio::time::{timeout, Timeout};
 
 use crate::models::decorated_book::DecoratedBook;
 use crate::models::expanded_book::ExpandedBook;
@@ -62,15 +56,14 @@ pub fn book_update_post(id: &str) -> String {
 
 #[get("/")]
 pub fn book_list(book_coll: &State<BookCollection>) -> Template {
-    let f_expanded_book_list = book_coll.list_books();
-    let expanded_book_list: Vec<ExpandedBook> = block_on(f_expanded_book_list);
+    let expanded_book_list: Vec<ExpandedBook> = book_coll.list_books();
     let mut decorated_books: Vec<DecoratedBook> = Vec::new();
     for expanded_book in expanded_book_list {
         let decorated_book = DecoratedBook::from_expanded_book(expanded_book);
         decorated_books.push(decorated_book);
     }
     Template::render(
-        "book_list",
+        "books_list",
         &BookTemplateContext {
             book_list: &decorated_books,
         },

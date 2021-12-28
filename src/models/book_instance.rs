@@ -1,24 +1,14 @@
-use chrono::prelude::*;
-use std::fmt;
+use bson::oid::ObjectId;
+use bson::DateTime;
+use serde::Deserialize;
 
-#[derive(Debug, PartialEq, Eq)]
+use crate::models::book_status::BookStatus;
+
+#[derive(Debug, Deserialize, PartialEq, Eq)]
 pub struct BookInstance {
-    pub book_id: String,
+    pub _id: ObjectId,
+    pub book_id: ObjectId,
     pub imprint: String,
     pub status: BookStatus,
-    pub due_back: NaiveDate,
-}
-
-#[derive(Debug, PartialEq, Eq)]
-pub enum BookStatus {
-    Available,
-    Maintenance,
-    Loaned,
-    Reserved,
-}
-
-impl fmt::Display for BookStatus {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}", self)
-    }
+    pub due_back: Option<DateTime>,
 }
