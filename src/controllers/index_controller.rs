@@ -30,7 +30,10 @@ pub async fn index(
 
     let mut context = HashMap::<String, String>::new();
     context.insert("num_books".to_string(), num_books.unwrap().to_string());
-    context.insert("num_instances_available".to_string(), available_books.to_string());
+    context.insert(
+        "num_instances_available".to_string(),
+        available_books.to_string(),
+    );
     context.insert(
         "num_instances".to_string(),
         num_book_instances.unwrap().to_string(),

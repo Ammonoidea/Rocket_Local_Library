@@ -1,6 +1,5 @@
 use serde::Deserialize;
 
-
 use crate::models::author::Author;
 #[derive(Deserialize, Debug)]
 pub struct ExpandedBook {

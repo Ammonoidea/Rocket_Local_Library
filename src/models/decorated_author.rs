@@ -1,8 +1,7 @@
-use serde::Deserialize;
 use rocket::serde::Serialize;
+use serde::Deserialize;
 
 use crate::models::author::Author;
-
 
 #[derive(Debug, Deserialize, PartialEq, Eq, Serialize)]
 #[serde(crate = "rocket::serde")]

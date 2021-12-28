@@ -12,7 +12,7 @@ pub struct DecoratedBook {
     pub summary: String,
     pub isbn: String,
     pub genre: Vec<String>,
-    pub url: String
+    pub url: String,
 }
 
 impl DecoratedBook {
