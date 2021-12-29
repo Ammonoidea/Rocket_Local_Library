@@ -1,16 +1,16 @@
+use crate::date_utils::date_utility::format_date_3m_dsfx_year;
 use crate::models::book::Book;
 use crate::models::book_status::BookStatus;
 use crate::models::expanded_book_instance::ExpandedBookInstance;
 
-use bson::DateTime;
-use serde::{Serialize};
+use serde::Serialize;
 
 #[derive(Debug, Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct DecoratedBookInstance {
     pub imprint: String,
     pub status: BookStatus,
-    pub due_back: Option<DateTime>,
+    pub due_back: Option<String>,
     pub book_obj: Book,
     pub url: String,
 }
@@ -21,10 +21,14 @@ impl DecoratedBookInstance {
     ) -> DecoratedBookInstance {
         let mut url: String = "catalog/bookinstance/".to_string();
         url.push_str(&expanded_book_instance._id.to_string());
+
+        let pretty_date = expanded_book_instance
+            .due_back
+            .map(format_date_3m_dsfx_year);
         DecoratedBookInstance {
             imprint: expanded_book_instance.imprint,
             status: expanded_book_instance.status,
-            due_back: expanded_book_instance.due_back,
+            due_back: pretty_date,
             book_obj: expanded_book_instance.book_obj[0].clone(),
             url: url,
         }

@@ -2,8 +2,8 @@ use crate::AuthorCollection;
 use crate::BookCollection;
 use crate::BookInstanceCollection;
 use crate::GenreCollection;
-use rocket::{State, uri};
 use rocket::response::Redirect;
+use rocket::{uri, State};
 use rocket_dyn_templates::Template;
 use std::collections::HashMap;
 
@@ -26,7 +26,6 @@ pub fn index(
     let num_book_instances = book_instance_coll.count_book_instances();
     let num_authors = author_coll.count_authors();
     let num_genres = genre_coll.count_genres();
-
 
     let mut context = HashMap::<String, String>::new();
     context.insert("num_books".to_string(), num_books.unwrap().to_string());

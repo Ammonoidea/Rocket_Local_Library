@@ -3,6 +3,7 @@
 extern crate rocket;
 
 mod controllers;
+mod date_utils;
 mod models;
 mod repositories;
 
@@ -31,7 +32,10 @@ async fn rocket() -> _ {
         .manage(BookInstanceCollection::build(&db))
         .manage(AuthorCollection::build(&db))
         .manage(GenreCollection::build(&db))
-        .mount("/", routes![index_controller::index, index_controller::bare_root])
+        .mount(
+            "/",
+            routes![index_controller::index, index_controller::bare_root],
+        )
         .mount(
             "/catalog/author",
             routes![

@@ -73,7 +73,7 @@ impl BookInstanceCollection {
             Err(_) => return vec![],
         };
 
-        println!("!!! Got cursor in list_books");
+        println!("!!! Got cursor in list_book_instancess");
 
         let res_documents: Vec<Result<Document>> = cursor.collect::<Vec<Result<Document>>>();
         let mut documents: Vec<Document> = Vec::new();
@@ -87,7 +87,6 @@ impl BookInstanceCollection {
         let mut book_instances: Vec<ExpandedBookInstance> = Vec::new();
         println!("Found {:?} books", documents.len());
         for d in documents {
-            println!("Document: {:?}", &d);
             let expanded_book_instance = match bson::from_document::<ExpandedBookInstance>(d) {
                 Ok(b) => b,
                 Err(e) => panic!("Error deserializing expanded book instance {:?}", e),

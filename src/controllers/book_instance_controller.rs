@@ -56,7 +56,8 @@ pub fn book_instance_update_post(id: &str) -> String {
 
 #[get("/")]
 pub fn book_instance_list(book_instance_coll: &State<BookInstanceCollection>) -> Template {
-    let expanded_book_instance_list: Vec<ExpandedBookInstance> = book_instance_coll.list_book_instances();
+    let expanded_book_instance_list: Vec<ExpandedBookInstance> =
+        book_instance_coll.list_book_instances();
     let mut decorated_book_instances: Vec<DecoratedBookInstance> = Vec::new();
     for expanded_book_instance in expanded_book_instance_list {
         let decorated_book_instance =
