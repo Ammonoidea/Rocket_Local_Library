@@ -1,3 +1,17 @@
+use rocket::serde::Serialize;
+use rocket::State;
+use rocket_dyn_templates::Template;
+
+use crate::repositories::genre_collection::GenreCollection;
+use crate::models::genre::Genre;
+use crate::models::decorated_genre::DecoratedGenre;
+
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+struct GenreTemplateContext<'r> {
+    genres: &'r Vec<DecoratedGenre>,
+}
+
 #[get("/create")]
 pub fn genre_create_get() -> &'static str {
     "NOT IMPLEMENTED: Genre create get"
@@ -40,8 +54,19 @@ pub fn genre_update_post(id: &str) -> String {
 }
 
 #[get("/")]
-pub fn genre_list() -> &'static str {
-    "NOT IMPLEMENTED: Genre list"
+pub fn genre_list(genre_coll: &State<GenreCollection>) -> Template {
+    let genres: Vec<Genre> = genre_coll.list_genres();
+    let mut decorated_genres: Vec<DecoratedGenre> = Vec::new();
+    for genre in genres {
+        let decorated_genre = DecoratedGenre::from_genre(&genre);
+        decorated_genres.push(decorated_genre);
+    }
+    Template::render(
+        "genre_list",
+        &GenreTemplateContext {
+            genres: &decorated_genres,
+        },
+    )
 }
 
 #[get("/<id>")]

@@ -1,0 +1,13 @@
+{% extends "base_generic" %}
+
+{% block content %}
+<h1>Genre List</h1>
+
+<ul>
+{% for genre in genres %}
+    <li><a href="{{ genre.url }}">{{ genre.name }}</a>
+{% else %}
+    <li>There are no genres</li>
+{% endfor %}    
+</ul>
+{% endblock %}
