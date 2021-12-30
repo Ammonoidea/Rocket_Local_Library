@@ -1,21 +1,14 @@
 use rocket::http::Status;
-use rocket::response::Responder;
 use rocket::serde::Serialize;
 use rocket::State;
 use rocket_dyn_templates::Template;
 
-use crate::models::book::Book;
 use crate::models::decorated_book::DecoratedBook;
 use crate::models::decorated_genre::DecoratedGenre;
 use crate::models::genre::Genre;
+use crate::repositories::book_collection::BookCollection;
 use crate::repositories::genre_collection::GenreCollection;
-use crate::BookCollection;
-
-#[derive(Debug, Responder)]
-pub enum TemplateOrStatusResponse {
-    Template(Template),
-    Status(Status),
-}
+use crate::responses::template_or_status_response::TemplateOrStatusResponse;
 
 #[get("/create")]
 pub fn genre_create_get() -> &'static str {

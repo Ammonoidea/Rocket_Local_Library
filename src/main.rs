@@ -6,6 +6,7 @@ mod controllers;
 mod date_utils;
 mod models;
 mod repositories;
+mod responses;
 
 use mongodb::sync::Client;
 

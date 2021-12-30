@@ -6,6 +6,7 @@ use mongodb::sync::{Collection, Database};
 
 use crate::models::book::Book;
 use crate::models::expanded_book::ExpandedBook;
+use crate::models::expanded_book_with_genre::ExpandedBookWithGenre;
 
 pub struct BookCollection {
     book_coll: Collection<Document>,
@@ -14,6 +15,43 @@ pub struct BookCollection {
 impl BookCollection {
     pub fn count_books(&self) -> Result<u64> {
         self.book_coll.estimated_document_count(None)
+    }
+
+    pub fn get_book_by_id(&self, id: &str) -> Option<ExpandedBookWithGenre> {
+        let object_id = ObjectId::parse_str(id).unwrap();
+        let mut cursor = match self.book_coll.aggregate(
+            vec![
+                doc! {
+                    "$match": {
+                        "_id": object_id,
+                    }
+                },
+                doc! {
+                    "$lookup": {
+                        "from": "authors",
+                        "localField": "author",
+                        "foreignField": "_id",
+                        "as": "author_obj",
+                    }
+                },
+                doc! {
+                    "$lookup": {
+                        "from": "genres",
+                        "localField": "genre",
+                        "foreignField": "_id",
+                        "as": "genre_objs",
+                    }
+                },
+            ],
+            None,
+        ) {
+            Ok(cursor) => cursor,
+            Err(_) => return None,
+        };
+
+        cursor
+            .next()
+            .map(|d| bson::from_document::<ExpandedBookWithGenre>(d.unwrap()).unwrap())
     }
 
     pub fn list_books(&self) -> Vec<ExpandedBook> {

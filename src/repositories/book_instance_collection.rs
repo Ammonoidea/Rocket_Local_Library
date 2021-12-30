@@ -1,8 +1,10 @@
+use bson::oid::ObjectId;
 use mongodb::bson::{self, doc, Document};
 use mongodb::error::Result;
 use mongodb::sync::{Collection, Cursor, Database};
 use serde::Deserialize;
 
+use crate::models::book_instance::BookInstance;
 use crate::models::expanded_book_instance::ExpandedBookInstance;
 
 pub struct BookInstanceCollection {
@@ -92,6 +94,36 @@ impl BookInstanceCollection {
                 Err(e) => panic!("Error deserializing expanded book instance {:?}", e),
             };
             book_instances.push(expanded_book_instance);
+        }
+        book_instances
+    }
+
+    pub fn get_book_instance_by_book(&self, book_id: &str) -> Vec<BookInstance> {
+        let book_object_id = ObjectId::parse_str(book_id).unwrap();
+        let cursor = self
+            .book_instance_coll
+            .find(doc! { "book" : book_object_id }, None)
+            .unwrap();
+        let res_documents = cursor.collect::<Vec<Result<Document>>>();
+        let mut documents: Vec<Document> = Vec::new();
+        for res in res_documents {
+            let document = match res {
+                Ok(r) => r,
+                Err(e) => panic!("Error getting document in list_books: {:?}", e),
+            };
+            documents.push(document);
+        }
+        let mut book_instances: Vec<BookInstance> = Vec::new();
+        for d in documents {
+            println!("*** Document: {:?}", &d);
+            let book_instance = match bson::from_document::<BookInstance>(d) {
+                Ok(b) => b,
+                Err(e) => panic!(
+                    "Error getting document in get_book_instance_by_book: {:?}",
+                    e
+                ),
+            };
+            book_instances.push(book_instance);
         }
         book_instances
     }
