@@ -8,7 +8,7 @@ pub struct Author {
     pub first_name: String,
     pub family_name: Option<String>,
     pub date_of_birth: Option<DateTime>,
-    pub date_of_death: Option<DateTime>
+    pub date_of_death: Option<DateTime>,
 }
 
 impl Author {

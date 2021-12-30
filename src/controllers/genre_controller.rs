@@ -1,15 +1,20 @@
+use rocket::http::Status;
+use rocket::response::Responder;
 use rocket::serde::Serialize;
 use rocket::State;
 use rocket_dyn_templates::Template;
 
-use crate::repositories::genre_collection::GenreCollection;
-use crate::models::genre::Genre;
+use crate::models::book::Book;
+use crate::models::decorated_book::DecoratedBook;
 use crate::models::decorated_genre::DecoratedGenre;
+use crate::models::genre::Genre;
+use crate::repositories::genre_collection::GenreCollection;
+use crate::BookCollection;
 
-#[derive(Serialize)]
-#[serde(crate = "rocket::serde")]
-struct GenreTemplateContext<'r> {
-    genres: &'r Vec<DecoratedGenre>,
+#[derive(Debug, Responder)]
+pub enum TemplateOrStatusResponse {
+    Template(Template),
+    Status(Status),
 }
 
 #[get("/create")]
@@ -53,6 +58,12 @@ pub fn genre_update_post(id: &str) -> String {
     owned_string
 }
 
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+struct GenreListTemplateContext<'r> {
+    genres: &'r Vec<DecoratedGenre>,
+}
+
 #[get("/")]
 pub fn genre_list(genre_coll: &State<GenreCollection>) -> Template {
     let genres: Vec<Genre> = genre_coll.list_genres();
@@ -63,15 +74,40 @@ pub fn genre_list(genre_coll: &State<GenreCollection>) -> Template {
     }
     Template::render(
         "genre_list",
-        &GenreTemplateContext {
+        &GenreListTemplateContext {
             genres: &decorated_genres,
         },
     )
 }
 
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+struct GenreDetailTemplateContext<'r> {
+    genre: &'r Genre,
+    genre_books: &'r Vec<DecoratedBook>,
+}
 #[get("/<id>")]
-pub fn genre_detail(id: &str) -> String {
-    let mut owned_string: String = "NOT IMPLEMENTED: Genre detail".to_owned();
-    owned_string.push_str(id);
-    owned_string
+pub fn genre_detail(
+    id: &str,
+    genre_coll: &State<GenreCollection>,
+    book_coll: &State<BookCollection>,
+) -> TemplateOrStatusResponse {
+    println!("*** in genre detail for genre {:?}", &id);
+    let genre = match genre_coll.get_genre_by_id(id) {
+        Some(g) => g,
+        None => return TemplateOrStatusResponse::Status(Status::NotFound),
+    };
+    let genre_books = book_coll.get_books_by_genre(id);
+    let mut decorated_genre_books: Vec<DecoratedBook> = Vec::new();
+    for book in genre_books {
+        let decorated_book = DecoratedBook::from_book(book);
+        decorated_genre_books.push(decorated_book);
+    }
+    TemplateOrStatusResponse::Template(Template::render(
+        "genre_detail",
+        &GenreDetailTemplateContext {
+            genre: &genre,
+            genre_books: &decorated_genre_books,
+        },
+    ))
 }

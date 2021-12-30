@@ -2,9 +2,9 @@ use rocket::serde::Serialize;
 use rocket::State;
 use rocket_dyn_templates::Template;
 
-use crate::repositories::author_collection::AuthorCollection;
 use crate::models::author::Author;
 use crate::models::decorated_author::DecoratedAuthor;
+use crate::repositories::author_collection::AuthorCollection;
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]

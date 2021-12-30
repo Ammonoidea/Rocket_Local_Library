@@ -1,3 +1,4 @@
+use bson::oid::ObjectId;
 use mongodb::bson::{doc, Document};
 use mongodb::error::Result;
 use mongodb::sync::{Collection, Database};
@@ -13,11 +14,22 @@ impl GenreCollection {
         self.genre_coll.estimated_document_count(None)
     }
 
+    pub fn get_genre_by_id(&self, id: &str) -> Option<Genre> {
+        let object_id = ObjectId::parse_str(id).unwrap();
+        let mut cursor = self
+            .genre_coll
+            .find(doc! { "_id" : object_id }, None)
+            .unwrap();
+        cursor
+            .next()
+            .map(|d| bson::from_document::<Genre>(d.unwrap()).unwrap())
+    }
+
     pub fn list_genres(&self) -> Vec<Genre> {
-        let cursor = match self.genre_coll.aggregate(
-            vec![doc! {"$sort": {"name" : 1,}},],
-            None,
-        ) {
+        let cursor = match self
+            .genre_coll
+            .aggregate(vec![doc! {"$sort": {"name" : 1,}}], None)
+        {
             Ok(cursor) => cursor,
             Err(_) => return vec![],
         };

@@ -1,7 +1,7 @@
+use bson::doc;
 use mongodb::bson::Document;
 use mongodb::error::Result;
 use mongodb::sync::{Collection, Database};
-use bson::doc;
 
 use crate::models::author::Author;
 
@@ -15,10 +15,10 @@ impl AuthorCollection {
     }
 
     pub fn list_authors(&self) -> Vec<Author> {
-        let cursor = match self.author_coll.aggregate(
-            vec![doc! {"$sort": {"family_name" : 1,}},],
-            None,
-        ) {
+        let cursor = match self
+            .author_coll
+            .aggregate(vec![doc! {"$sort": {"family_name" : 1,}}], None)
+        {
             Ok(cursor) => cursor,
             Err(_) => return vec![],
         };
