@@ -18,7 +18,7 @@ pub struct DecoratedBook {
 
 impl DecoratedBook {
     pub fn from_expanded_book(expanded_book: ExpandedBook) -> DecoratedBook {
-        let mut url: String = "book/".to_string();
+        let mut url: String = "/catalog/book/".to_string();
         url.push_str(&expanded_book._id.to_string());
 
         let mut genres: Vec<String> = Vec::new();
@@ -36,7 +36,7 @@ impl DecoratedBook {
     }
 
     pub fn from_book(book: Book) -> DecoratedBook {
-        let mut url: String = "catalog/book/".to_string();
+        let mut url: String = "/catalog/book/".to_string();
         url.push_str(&book._id.to_string());
 
         let mut genres: Vec<String> = Vec::new();

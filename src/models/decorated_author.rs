@@ -16,7 +16,7 @@ pub struct DecoratedAuthor {
 
 impl DecoratedAuthor {
     pub fn from_author(author: &Author) -> DecoratedAuthor {
-        let mut url: String = "author/".to_string();
+        let mut url: String = "/catalog/author/".to_string();
         url.push_str(&author._id.to_hex());
         DecoratedAuthor {
             first_name: author.first_name.clone(),

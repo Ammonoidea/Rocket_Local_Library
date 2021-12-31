@@ -21,7 +21,7 @@ impl DecoratedBookInstance {
     pub fn from_expanded_book_instance(
         expanded_book_instance: ExpandedBookInstance,
     ) -> DecoratedBookInstance {
-        let mut url: String = "bookinstance/".to_string();
+        let mut url: String = "/catalog/bookinstance/".to_string();
         url.push_str(&expanded_book_instance._id.to_string());
 
         let pretty_date = expanded_book_instance
@@ -38,7 +38,7 @@ impl DecoratedBookInstance {
     }
 
     pub fn from_book_instance(book_instance: BookInstance) -> DecoratedBookInstance {
-        let mut url: String = "bookinstance/".to_string();
+        let mut url: String = "/catalog/bookinstance/".to_string();
         url.push_str(&book_instance._id.to_string());
 
         let pretty_date = book_instance.due_back.map(format_date_3m_dsfx_year);

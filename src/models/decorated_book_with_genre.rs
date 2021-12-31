@@ -1,5 +1,5 @@
 use rocket::serde::Serialize;
-
+use rocket::uri;
 use crate::models::expanded_book_with_genre::ExpandedBookWithGenre;
 
 use crate::models::decorated_author::DecoratedAuthor;
@@ -18,7 +18,7 @@ pub struct DecoratedBookWithGenre {
 
 impl DecoratedBookWithGenre {
     pub fn from_expanded_book(expanded_book: ExpandedBookWithGenre) -> DecoratedBookWithGenre {
-        let mut url: String = "book/".to_string();
+        let mut url: String = "/catalog/book/".to_string();
         url.push_str(&expanded_book._id.to_string());
 
         let mut decorated_genres: Vec<DecoratedGenre> = Vec::new();

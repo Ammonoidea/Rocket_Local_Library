@@ -11,7 +11,7 @@ pub struct DecoratedGenre {
 
 impl DecoratedGenre {
     pub fn from_genre(genre: &Genre) -> DecoratedGenre {
-        let mut url: String = "genre/".to_string();
+        let mut url: String = "/catalog/genre/".to_string();
         url.push_str(&genre._id.to_hex());
         DecoratedGenre {
             name: genre.name.clone(),
