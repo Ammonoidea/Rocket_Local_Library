@@ -1,6 +1,5 @@
-use rocket::serde::Serialize;
-use rocket::uri;
 use crate::models::expanded_book_with_genre::ExpandedBookWithGenre;
+use rocket::serde::Serialize;
 
 use crate::models::decorated_author::DecoratedAuthor;
 use crate::models::decorated_genre::DecoratedGenre;

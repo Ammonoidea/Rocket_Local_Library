@@ -1,0 +1,30 @@
+{% extends "base_generic" %}
+
+{% block content %}
+    <h1>Title: {{ author.name }}</h1>
+
+    {% if author.date_of_birth and author.date_of_death %}
+        {% set dob_unix_sec = author.date_of_birth | get(key="$date") | get(key="$numberLong") | int %}
+        {% set dod_unix_sec = author.date_of_death | get(key="$date") | get(key="$numberLong") | int %}
+        <p>({{ dob_unix_sec / 1000 | int | date(format="%Y") }} - {{ dod_unix_sec / 1000 | int | date(format="%Y") }})</p>
+    {% elif author.date_of_birth %}
+        {% set dob_unix_sec = author.date_of_birth | get(key="$date") | get(key="$numberLong") | int %}
+        <p>(b. {{ dob_unix_sec / 1000 | int | date(format="%Y") }})</p>
+    {% elif author.date_of_death %}
+        {% set dod_unix_sec = author.date_of_death | get(key="$date") | get(key="$numberLong") | int %}
+        <p>(d. {{ dod_unix_sec / 1000 | int | date(format="%Y") }})</p>
+    {% endif %}
+
+    <div style="margin-left:20px;margin-top:20px;"></div>
+
+    <h4>Books</h4>
+
+    <dl>
+        {% for book in author_books %}
+        <dt><a href="{{ book.url }}">{{ book.title }}</a></dt>
+        <dd> {{ book.summary }}</dd>
+        {% else %}
+            <p> This author has no books </p>
+        {% endfor %}
+    </dl>
+{% endblock %}

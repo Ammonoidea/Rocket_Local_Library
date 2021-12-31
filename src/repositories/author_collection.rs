@@ -1,4 +1,5 @@
 use bson::doc;
+use bson::oid::ObjectId;
 use mongodb::bson::Document;
 use mongodb::error::Result;
 use mongodb::sync::{Collection, Database};
@@ -44,6 +45,17 @@ impl AuthorCollection {
             authors.push(author);
         }
         authors
+    }
+
+    pub fn get_author_by_id(&self, id: &str) -> Option<Author> {
+        let object_id = ObjectId::parse_str(id).unwrap();
+        let mut cursor = self
+            .author_coll
+            .find(doc! { "_id" : object_id }, None)
+            .unwrap();
+        cursor
+            .next()
+            .map(|d| bson::from_document::<Author>(d.unwrap()).unwrap())
     }
 
     pub fn build(db: &Database) -> AuthorCollection {

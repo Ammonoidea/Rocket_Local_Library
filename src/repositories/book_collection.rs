@@ -133,6 +133,39 @@ impl BookCollection {
         books
     }
 
+    pub fn get_books_by_author(&self, author_id: &str) -> Vec<Book> {
+        let object_id = ObjectId::parse_str(author_id).unwrap();
+        let cursor = match self.book_coll.aggregate(
+            vec![
+                doc! { "$match": { "author": object_id}},
+                doc! {"$sort": {"title": 1}},
+            ],
+            None,
+        ) {
+            Ok(cursor) => cursor,
+            Err(_) => return vec![],
+        };
+        let res_documents = cursor.collect::<Vec<Result<Document>>>();
+        let mut documents: Vec<Document> = Vec::new();
+        for res in res_documents {
+            let document = match res {
+                Ok(r) => r,
+                Err(e) => panic!("Error getting document in list_books: {:?}", e),
+            };
+            documents.push(document);
+        }
+        let mut books: Vec<Book> = Vec::new();
+        println!("Found {:?} books for genre {:?}", documents.len(), &author_id);
+        for d in documents {
+            let book = match bson::from_document::<Book>(d) {
+                Ok(b) => b,
+                Err(e) => panic!("Error deserializing expanded book {:?}", e),
+            };
+            books.push(book);
+        }
+        books
+    }
+
     pub fn build(db: &Database) -> BookCollection {
         BookCollection {
             book_coll: db.collection::<Document>("books"),
