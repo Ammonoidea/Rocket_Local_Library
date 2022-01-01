@@ -1,3 +1,4 @@
+use rocket::http::Status;
 use rocket::serde::Serialize;
 use rocket::State;
 use rocket_dyn_templates::Template;
@@ -5,6 +6,7 @@ use rocket_dyn_templates::Template;
 use crate::models::decorated_book_instance::DecoratedBookInstance;
 use crate::models::expanded_book_instance::ExpandedBookInstance;
 use crate::repositories::book_instance_collection::BookInstanceCollection;
+use crate::responses::template_or_status_response::TemplateOrStatusResponse;
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
@@ -72,9 +74,27 @@ pub fn book_instance_list(book_instance_coll: &State<BookInstanceCollection>) ->
     )
 }
 
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+struct BookInstanceDetailTemplateContext<'r> {
+    bookinstance: &'r DecoratedBookInstance,
+}
+
 #[get("/<id>")]
-pub fn book_instance_detail(id: &str) -> String {
-    let mut owned_string: String = "NOT IMPLEMENTED: Book Instance detail".to_owned();
-    owned_string.push_str(id);
-    owned_string
+pub fn book_instance_detail(
+    id: &str,
+    book_instance_coll: &State<BookInstanceCollection>,
+) -> TemplateOrStatusResponse {
+    let expanded_book_instance = match book_instance_coll.get_book_instance_by_id(id) {
+        Some(bi) => bi,
+        None => return TemplateOrStatusResponse::Status(Status::NotFound),
+    };
+    TemplateOrStatusResponse::Template(Template::render(
+        "bookinstance_detail",
+        &BookInstanceDetailTemplateContext {
+            bookinstance: &DecoratedBookInstance::from_expanded_book_instance(
+                expanded_book_instance,
+            ),
+        },
+    ))
 }

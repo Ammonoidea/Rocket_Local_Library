@@ -1,7 +1,7 @@
 use crate::date_utils::date_utility::format_date_3m_dsfx_year;
-use crate::models::book::Book;
 use crate::models::book_instance::BookInstance;
 use crate::models::book_status::BookStatus;
+use crate::models::decorated_book::DecoratedBook;
 use crate::models::expanded_book_instance::ExpandedBookInstance;
 
 use serde::Serialize;
@@ -13,7 +13,7 @@ pub struct DecoratedBookInstance {
     pub imprint: String,
     pub status: BookStatus,
     pub due_back: Option<String>,
-    pub book_obj: Option<Book>,
+    pub book_obj: Option<DecoratedBook>,
     pub url: String,
 }
 
@@ -32,7 +32,7 @@ impl DecoratedBookInstance {
             imprint: expanded_book_instance.imprint,
             status: expanded_book_instance.status,
             due_back: pretty_date,
-            book_obj: Some(expanded_book_instance.book_obj[0].clone()),
+            book_obj: Some(DecoratedBook::from_book(expanded_book_instance.book_obj[0].clone())),
             url: url,
         }
     }

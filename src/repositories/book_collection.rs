@@ -8,6 +8,8 @@ use crate::models::book::Book;
 use crate::models::expanded_book::ExpandedBook;
 use crate::models::expanded_book_with_genre::ExpandedBookWithGenre;
 
+use super::coll_utility;
+
 pub struct BookCollection {
     book_coll: Collection<Document>,
 }
@@ -79,25 +81,7 @@ impl BookCollection {
 
         println!("!!! Got cursor in list_books");
 
-        let res_documents: Vec<Result<Document>> = cursor.collect::<Vec<Result<Document>>>();
-        let mut documents: Vec<Document> = Vec::new();
-        for res in res_documents {
-            let document = match res {
-                Ok(r) => r,
-                Err(e) => panic!("Error getting document in list_books: {:?}", e),
-            };
-            documents.push(document);
-        }
-        let mut books: Vec<ExpandedBook> = Vec::new();
-        println!("Found {:?} books", documents.len());
-        for d in documents {
-            let expanded_book = match bson::from_document::<ExpandedBook>(d) {
-                Ok(b) => b,
-                Err(e) => panic!("Error deserializing expanded book {:?}", e),
-            };
-            books.push(expanded_book);
-        }
-        books
+        coll_utility::doc_vec_converter::<ExpandedBook>(cursor)
     }
 
     pub fn get_books_by_genre(&self, genre_id: &str) -> Vec<Book> {
@@ -112,25 +96,7 @@ impl BookCollection {
             Ok(cursor) => cursor,
             Err(_) => return vec![],
         };
-        let res_documents = cursor.collect::<Vec<Result<Document>>>();
-        let mut documents: Vec<Document> = Vec::new();
-        for res in res_documents {
-            let document = match res {
-                Ok(r) => r,
-                Err(e) => panic!("Error getting document in list_books: {:?}", e),
-            };
-            documents.push(document);
-        }
-        let mut books: Vec<Book> = Vec::new();
-        println!("Found {:?} books for genre {:?}", documents.len(), genre_id);
-        for d in documents {
-            let book = match bson::from_document::<Book>(d) {
-                Ok(b) => b,
-                Err(e) => panic!("Error deserializing expanded book {:?}", e),
-            };
-            books.push(book);
-        }
-        books
+        coll_utility::doc_vec_converter::<Book>(cursor)
     }
 
     pub fn get_books_by_author(&self, author_id: &str) -> Vec<Book> {
@@ -145,25 +111,7 @@ impl BookCollection {
             Ok(cursor) => cursor,
             Err(_) => return vec![],
         };
-        let res_documents = cursor.collect::<Vec<Result<Document>>>();
-        let mut documents: Vec<Document> = Vec::new();
-        for res in res_documents {
-            let document = match res {
-                Ok(r) => r,
-                Err(e) => panic!("Error getting document in list_books: {:?}", e),
-            };
-            documents.push(document);
-        }
-        let mut books: Vec<Book> = Vec::new();
-        println!("Found {:?} books for genre {:?}", documents.len(), &author_id);
-        for d in documents {
-            let book = match bson::from_document::<Book>(d) {
-                Ok(b) => b,
-                Err(e) => panic!("Error deserializing expanded book {:?}", e),
-            };
-            books.push(book);
-        }
-        books
+        coll_utility::doc_vec_converter::<Book>(cursor)
     }
 
     pub fn build(db: &Database) -> BookCollection {

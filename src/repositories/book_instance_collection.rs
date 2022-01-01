@@ -6,6 +6,7 @@ use serde::Deserialize;
 
 use crate::models::book_instance::BookInstance;
 use crate::models::expanded_book_instance::ExpandedBookInstance;
+use crate::repositories::coll_utility;
 
 pub struct BookInstanceCollection {
     book_instance_coll: Collection<Document>,
@@ -77,25 +78,41 @@ impl BookInstanceCollection {
 
         println!("!!! Got cursor in list_book_instancess");
 
-        let res_documents: Vec<Result<Document>> = cursor.collect::<Vec<Result<Document>>>();
-        let mut documents: Vec<Document> = Vec::new();
-        for res in res_documents {
-            let document = match res {
-                Ok(r) => r,
-                Err(e) => panic!("Error getting document in list_books: {:?}", e),
-            };
-            documents.push(document);
-        }
-        let mut book_instances: Vec<ExpandedBookInstance> = Vec::new();
-        println!("Found {:?} books", documents.len());
-        for d in documents {
-            let expanded_book_instance = match bson::from_document::<ExpandedBookInstance>(d) {
-                Ok(b) => b,
-                Err(e) => panic!("Error deserializing expanded book instance {:?}", e),
-            };
-            book_instances.push(expanded_book_instance);
-        }
-        book_instances
+        coll_utility::doc_vec_converter::<ExpandedBookInstance>(cursor)
+    }
+
+    pub fn get_book_instance_by_id(&self, id: &str) -> Option<ExpandedBookInstance> {
+        let object_id = ObjectId::parse_str(id).unwrap();
+        let mut cursor = match self.book_instance_coll.aggregate(
+            vec![
+                doc! {
+                "$match": {"_id": object_id,}},
+                doc! {
+                    "$lookup": {
+                        "from": "books",
+                        "localField": "book",
+                        "foreignField": "_id",
+                        "as": "book_obj",
+                    }
+                },
+                doc! {
+                    "$sort": {
+                        "book_obj.title" : 1,
+                    }
+                },
+            ],
+            None,
+        ) {
+            Ok(cursor) => cursor,
+            Err(e) => {
+                println!("Error finding book instance with id {}. Error: {}", id, e);
+                return None
+            },
+        };
+
+        cursor
+            .next()
+            .map(|d| bson::from_document::<ExpandedBookInstance>(d.unwrap()).unwrap())
     }
 
     pub fn get_book_instance_by_book(&self, book_id: &str) -> Vec<BookInstance> {
@@ -104,27 +121,7 @@ impl BookInstanceCollection {
             .book_instance_coll
             .find(doc! { "book" : book_object_id }, None)
             .unwrap();
-        let res_documents = cursor.collect::<Vec<Result<Document>>>();
-        let mut documents: Vec<Document> = Vec::new();
-        for res in res_documents {
-            let document = match res {
-                Ok(r) => r,
-                Err(e) => panic!("Error getting document in list_books: {:?}", e),
-            };
-            documents.push(document);
-        }
-        let mut book_instances: Vec<BookInstance> = Vec::new();
-        for d in documents {
-            println!("*** Document: {:?}", &d);
-            let book_instance = match bson::from_document::<BookInstance>(d) {
-                Ok(b) => b,
-                Err(e) => panic!(
-                    "Error getting document in get_book_instance_by_book: {:?}",
-                    e
-                ),
-            };
-            book_instances.push(book_instance);
-        }
-        book_instances
+
+        coll_utility::doc_vec_converter::<BookInstance>(cursor)
     }
 }
